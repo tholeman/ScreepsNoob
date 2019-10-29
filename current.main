@@ -1,0 +1,104 @@
+var roleHarvester = require('role.harvester');
+var roleUpgrader = require('role.upgrader');
+var roleBuilder = require('role.builder');
+var roleRepairer = require('role.repairer');
+var roleRH = require('role.RH');
+var roleScout = require('role.scout');
+
+module.exports.loop = function () {
+
+
+     for(var name in Memory.creeps) {
+        if(!Game.creeps[name]) {
+            delete Memory.creeps[name];
+            console.log('Clearing non-existing creep memory:', name);
+        }
+    }
+
+    var harvestersCount = _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester');
+    var upgradersCount = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader');
+    var buildersCount = _.filter(Game.creeps, (creep) => creep.memory.role == 'builder');
+    var repairersCount = _.filter(Game.creeps, (creep) => creep.memory.role == 'repairer');
+    var RHCount = _.filter(Game.creeps, (creep) => creep.memory.role == 'remoteharv');
+    var scoutCount = _.filter(Game.creeps, (creep) => creep.memory.role == 'scout');
+    
+    console.log('Harvs: ' + harvestersCount.length + '  Upgrs: ' + upgradersCount.length + '  Builds: ' + buildersCount.length 
+        + '  Reps: ' + repairersCount.length + '  RHs: ' + RHCount.length+ '  Scouts: ' + scoutCount.length);
+
+    if(scoutCount.length < 1) {
+        var newName = 'Scout' + Game.time;
+        console.log('Spawning new scout: ' + newName);
+        Game.spawns['Spawn1'].spawnCreep([MOVE, MOVE], newName, {memory: {role: 'scout'}});
+    }
+
+    if(harvestersCount.length < 3) {
+        var newName = 'Harvester' + Game.time;
+        console.log('Spawning new harvester: ' + newName);
+        Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, CARRY, MOVE, MOVE], newName, {memory: {role: 'harvester'}});
+    }
+    
+    if(upgradersCount.length < 2) {
+        var newName = 'UpgraderSmFw' + Game.time;
+        console.log('Spawning new upgrader: ' + newName);
+        Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, CARRY, MOVE], newName, {memory: {role: 'upgrader'}});
+    }
+    
+    if(buildersCount.length < 6) {
+        var newName = 'BuilderFast' + Game.time;
+        console.log('Spawning new builder: ' + newName);
+        Game.spawns['Spawn1'].spawnCreep([WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName, {memory: {role: 'builder' , building: false}});
+    }
+    
+    if(repairersCount.length < 2) {
+        var newName = 'RepairerFast' + Game.time;
+        console.log('Spawning new repairer: ' + newName);
+        Game.spawns['Spawn1'].spawnCreep([WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName, {memory: {role: 'repairer' , repairing: false}});
+    }
+    
+    if(RHCount.length < 4) {
+        var newName = 'RH_' + Game.time;
+        console.log('Spawning new RH: ' + newName);
+        Game.spawns['Spawn1'].spawnCreep([WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], newName, {memory: {role: 'remoteharv' , building: false}});
+    }
+
+    var tower = Game.getObjectById('5db6cc90a5cfda6258d39924');
+    if(tower) {
+        var closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
+            filter: (structure) => structure.hits < structure.hitsMax
+        });
+        if(closestDamagedStructure) {
+            tower.repair(closestDamagedStructure);
+        }
+
+        var closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+        if(closestHostile) {
+            tower.attack(closestHostile);
+        }
+    }
+
+
+
+    for(var name in Game.creeps) {
+        var creep = Game.creeps[name];
+        if(creep.memory.role == 'harvester') {
+            roleHarvester.run(creep);
+        }
+        if(creep.memory.role == 'upgrader') {
+            roleUpgrader.run(creep);
+        }
+        if(creep.memory.role == 'builder') {
+            roleBuilder.run(creep);
+        }
+        if(creep.memory.role == 'repairer') {
+            roleRepairer.run(creep);
+        }
+        if(creep.memory.role == 'remoteharv') {
+            roleRH.run(creep);
+        }
+        if(creep.memory.role == 'scout') {
+            roleScout.run(creep);
+        }
+    }
+}
+
+

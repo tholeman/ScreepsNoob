@@ -1,0 +1,44 @@
+var roleRepairer = {
+
+    /** @param {Creep} creep **/
+    run: function(creep) {
+
+        //
+        //SET REPAIRER MEMORY BASED ON CARGO FULL OR EMPTY
+        //
+        if(creep.memory.repairing && creep.carry.energy == 0) {
+            creep.memory.repairing = false;
+            creep.say('🔄 harvest');
+            console.log('Set creep repairing memory:', creep.memory.repairing);
+        } //CLOSE if(creep.memory.repairing && creep.carry.energy == 0)
+
+        if(!creep.memory.repairing && creep.carry.energy == creep.carryCapacity) {
+            creep.memory.repairing = true;
+            creep.say('repairing');
+            console.log('Set creep repairing memory:', creep.memory.repairing);
+        } //CLOSE if(!creep.memory.repairing && creep.carry.energy == creep.carryCapacity)
+        
+        //
+        // IF REPAIRER MEMORY repairing==true FIND DAMAGED SITES AND REPAIR
+        //
+        if(creep.memory.repairing) {
+                var targets = creep.room.find(FIND_STRUCTURES, {filter: object => object.hits < (object.hitsMax * .75)});
+                targets.sort((a,b) => a.hits - b.hits);
+                if(targets.length) {
+                    if(creep.repair(targets[0]) == ERR_NOT_IN_RANGE) {creep.moveTo(targets[0], {visualizePathStyle: {stroke: '#ffffff'}});
+                    } //CLOSE if(creep.repair(targets[0])
+                } //CLOSE if(targets.length) 
+        } //CLOSE if(creep.memory.repairing)
+
+        //
+        // ELSE IF REPAIRER MEMORY repairing==false FIND SOURCE OF ENERGY AND HARVEST
+        //
+        else {
+            var sources = creep.room.find(FIND_SOURCES);
+                if(creep.harvest(sources[1]) == ERR_NOT_IN_RANGE) {creep.moveTo(sources[1], {visualizePathStyle: {stroke: '#ffaa00'}}); 
+                } // CLOSE if(creep.harvest(sources[1]) == ERR_NOT_IN_RANGE)
+        }; //CLOSE else 
+    } // CLOSE run: function(creep) 
+} //CLOSE var roleRepairer = 
+
+module.exports = roleRepairer;

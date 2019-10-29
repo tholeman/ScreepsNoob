@@ -1,0 +1,15 @@
+var roleScout = {
+
+    //******** DUMB SCOUT JUST GOES TO FLAG IN NEXT ROOM FOR VISIBILITY
+
+    run: function(creep) {
+
+    creep.moveTo(Game.flags.Flag1);    
+
+      
+    } // CLOSE run: function(creep) 
+
+} //CLOSE var 
+
+
+module.exports = roleScout;

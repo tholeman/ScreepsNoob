@@ -1,0 +1,59 @@
+var roleRH = {
+
+    //******** REMOTE HARVESTERS MOVE & BUILD TESTING
+    run: function(creep) {
+
+        //
+        //SET BUILDER MEMORY BASED ON CARGO FULL OR EMPTY
+        //
+        if(creep.memory.building && creep.carry.energy == 0) {
+            creep.memory.building = false;
+            creep.say('🔄 harvest');
+            console.log('RH creep building memory:', creep.memory.building);
+        }
+        if(!creep.memory.building && creep.carry.energy == creep.carryCapacity) {
+            creep.memory.building = true;
+            creep.say('🚧 build');
+            console.log('RH creep building memory:', creep.memory.building);
+        }
+        
+        //
+        // IF BUILDER MEMORY building==true FIND CONSTRUCTION SITES AND BUILD
+        //
+        if(creep.memory.building) {
+            var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
+            
+            if(targets.length) {
+                if(creep.build(targets[0]) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(targets[0], {visualizePathStyle: {stroke: '#ffffff'}});
+                }
+            }
+            //
+            // IF BUILDER MEMORY building==true AND NO CONSTRUCTION SITES, FIND REPAIR SITES AND REPAIR
+            //
+            else {
+                const targets = creep.room.find(FIND_STRUCTURES, {filter: object => object.hits < object.hitsMax});
+                targets.sort((a,b) => a.hits - b.hits);
+                if(targets.length) {
+                    if(creep.repair(targets[0]) == ERR_NOT_IN_RANGE) {creep.moveTo(targets[0], {visualizePathStyle: {stroke: '#ffffff'}});
+                    } //CLOSE if(creep.repair(targets[0])
+                } //CLOSE if(targets.length) 
+           } //CLOSE else
+        } //CLOSE if(creep.memory.building) 
+
+        //
+        // IF BUILDER MEMORY building==false FIND SOURCE OF ENERGY AND HARVEST
+        //
+        else {
+            const singleSource = Game.getObjectById('5bbcabbf9099fc012e63433d');
+            if(creep.harvest(singleSource) == ERR_NOT_IN_RANGE) {
+                creep.moveTo(singleSource, {visualizePathStyle: {stroke: '#ffaa00'}}); 
+            } // CLOSE if(creep.harvest(singleSource) == ERR_NOT_IN_RANGE)
+        }; //CLOSE else 
+
+    } // CLOSE run: function(creep) 
+} //CLOSE var 
+
+
+
+module.exports = roleRH;

@@ -1,10 +1,17 @@
 var roleScout = {
-
-    //******** DUMB SCOUT JUST GOES TO FLAG IN NEXT ROOM FOR VISIBILITY
-
+    
+    /** @param {Creep} creep **/
     run: function(creep) {
+ //******** DUMB SCOUT JUST GOES TO FLAG IN NEXT ROOM FOR VISIBILITY
 
-    creep.moveTo(Game.flags.Flag1);    
+  
+    creep.moveTo(Game.flags.Flag1);
+   
+    //const sourceW21N25 = Game.getObjectById('5bbcabbf9099fc012e63433d');
+   
+    //creep.memory.sourceId = sourceW21N25
+    
+    //console.log('DISPLAYING sourceW21N25: ' + sourceW21N25 )
 
       
     } // CLOSE run: function(creep) 

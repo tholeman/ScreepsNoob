@@ -1,26 +1,33 @@
+//******** NORTH ROOM BUILDER & REPAIRER 
+//
 var roleRH = {
-
-    //******** REMOTE HARVESTERS MOVE & BUILD TESTING
     run: function(creep) {
+
+        //console.log('BuilderNorth current room: ' + creep.room.name);
+
+        var desiredRoom = 'W21N25'
 
         //
         //SET BUILDER MEMORY BASED ON CARGO FULL OR EMPTY
         //
         if(creep.memory.building && creep.carry.energy == 0) {
             creep.memory.building = false;
-            creep.say('🔄 harvest');
-            console.log('RH creep building memory:', creep.memory.building);
         }
         if(!creep.memory.building && creep.carry.energy == creep.carryCapacity) {
             creep.memory.building = true;
-            creep.say('🚧 build');
-            console.log('RH creep building memory:', creep.memory.building);
         }
+        var containersInThisRoom = creep.room.find(FIND_STRUCTURES, {
+            filter: (structure) => {
+                return (structure.structureType == STRUCTURE_CONTAINER) 
+                && structure.store.getUsedCapacity(RESOURCE_ENERGY) > 0;}});
+
+        if(creep.room.name != desiredRoom) creep.moveTo(Game.flags.Flag1);
         
+
         //
         // IF BUILDER MEMORY building==true FIND CONSTRUCTION SITES AND BUILD
         //
-        if(creep.memory.building) {
+        else if(creep.memory.building) {
             var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
             
             if(targets.length) {
@@ -42,18 +49,23 @@ var roleRH = {
         } //CLOSE if(creep.memory.building) 
 
         //
-        // IF BUILDER MEMORY building==false FIND SOURCE OF ENERGY AND HARVEST
+        // IF BUILDER MEMORY building==false FIND SOURCE OF ENERGY AND GET SOME
         //
         else {
             const singleSource = Game.getObjectById('5bbcabbf9099fc012e63433d');
-            if(creep.harvest(singleSource) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(singleSource, {visualizePathStyle: {stroke: '#ffaa00'}}); 
-            } // CLOSE if(creep.harvest(singleSource) == ERR_NOT_IN_RANGE)
+            if(containersInThisRoom.length > 0) 
+                {
+                    if(creep.withdraw(containersInThisRoom[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE)
+                    {
+                        creep.moveTo(containersInThisRoom[0], {visualizePathStyle: {stroke: '#ffffff'}});
+                    }
+            }
+                else if(creep.harvest(singleSource) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(singleSource, {visualizePathStyle: {stroke: '#ffaa00'}}); 
+                } // CLOSE if(creep.harvest(singleSource) == ERR_NOT_IN_RANGE)
         }; //CLOSE else 
 
     } // CLOSE run: function(creep) 
 } //CLOSE var 
-
-
-
 module.exports = roleRH;
+

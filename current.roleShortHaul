@@ -31,7 +31,7 @@ var roleShortHaul = {
                     creep.moveTo(MainRoomStorage, {visualizePathStyle: {stroke: '#ffffff'}});
                 }
         }
-        else if(tower1.store.getFreeCapacity(RESOURCE_ENERGY) > 0)
+        else if(tower1.store.getFreeCapacity(RESOURCE_ENERGY) > 100)
         {
             if(creep.transfer(tower1, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE)
             {

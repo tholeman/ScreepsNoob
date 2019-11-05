@@ -1,0 +1,14 @@
+var roleDefender = {
+
+    /** @param {Creep} creep **/
+    run: function(creep) {
+
+        var attacker = Game.creeps.Attacker1;
+        var enemies= attacker.room.find(Game.HOSTILE_CREEPS);
+
+        attacker.moveTo(enemies[0], {visualizePathStyle: {stroke: '#ffffff'}});
+        attacker.attack(enemies[0]);
+
+    } //CLOSE var roleDefender = 
+
+module.exports = roleDefender;

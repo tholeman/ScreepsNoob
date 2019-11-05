@@ -1,0 +1,48 @@
+//******** TRUCKER CODE
+// CODE TO SPAWN A TRUCKER --> Game.spawns['Spawn1'].spawnCreep([CARRY, MOVE], 'TruckerManual', {memory: {role: 'trucker'}});
+
+var roleTrucker = {
+
+    /** @param {Creep} creep **/
+    run: function(creep) {
+ 
+        const MainRoomStorage = Game.getObjectById('5db8a6bc8e7b7671a2f61789');
+        const container_1_W21N25 = Game.getObjectById('5dc080591d44a26b5ff194e9');
+        const container_2_W21N25 = Game.getObjectById('5dc08a0572e2a752b082e075');
+        
+   
+        //console.log('TRUCKER MODULE DISPLAYING--> containerW21N25: ' + containerW21N25 + 'MainRoomStorage: ' + MainRoomStorage)
+        //console.log('container_1_W21N25.store.getUsedCapacity() ' + container_1_W21N25.store.getUsedCapacity() + 'container_2_W21N25.store.getCapacity() ' + container_2_W21N25.store.getCapacity() )
+
+        if(creep.store.getFreeCapacity() > 0)
+        {
+            if(container_1_W21N25.store.getUsedCapacity() > 0 )
+            {
+                if(creep.withdraw(container_1_W21N25, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE)
+                {
+                    creep.moveTo(container_1_W21N25, {visualizePathStyle: {stroke: '#ffffff'}});
+                }  
+            }
+            else if (container_2_W21N25.store.getUsedCapacity() > 0 )
+            {
+                if(creep.withdraw(container_2_W21N25, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE)
+                {
+                    creep.moveTo(container_2_W21N25, {visualizePathStyle: {stroke: '#ffffff'}});
+                }
+            }    
+        }
+        else
+        {
+            //creep.moveTo(MainRoomStorage);
+            //creep.transfer(MainRoomStorage, RESOURCE_ENERGY);
+
+            if(creep.transfer(MainRoomStorage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE)
+            {
+                creep.moveTo(MainRoomStorage, {visualizePathStyle: {stroke: '#ffffff'}});
+            }
+        }
+
+    } // CLOSE run: function(creep) 
+
+} //CLOSE var 
+module.exports = roleTrucker;

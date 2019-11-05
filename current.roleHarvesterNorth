@@ -1,0 +1,33 @@
+var roleHarvesterNorth = {
+
+    /** @param {Creep} creep **/
+    run: function(creep) {
+
+        const Shard3_W21N25_Source = '5bbcabbf9099fc012e63433d'
+        
+        if(creep.store.getFreeCapacity() > 0) {
+            const singleSource = Game.getObjectById(Shard3_W21N25_Source);
+            if(creep.harvest(singleSource) == ERR_NOT_IN_RANGE) {
+                creep.moveTo(singleSource, {visualizePathStyle: {stroke: '#ffaa00'}}); 
+            } // CLOSE if(creep.harvest(singleSource)
+        }
+        else {
+            var containersInThisRoom = creep.room.find(FIND_STRUCTURES, {
+                filter: (structure) => {
+                    return (structure.structureType == STRUCTURE_CONTAINER) 
+                    && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;}});
+            
+            //console.log('harvesterNorth containersInThisRoom = ', containersInThisRoom );
+
+            if(containersInThisRoom.length > 0) {
+                if(creep.transfer(containersInThisRoom[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(containersInThisRoom[0], {visualizePathStyle: {stroke: '#ffffff'}});
+                }
+            }
+        }
+	}
+};
+
+module.exports = roleHarvesterNorth;
+
+

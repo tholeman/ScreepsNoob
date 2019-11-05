@@ -1,0 +1,64 @@
+//UPGRADER FOR NORTH room
+//TO SPAWN upgraderNorth --> Game.spawns['Spawn1'].spawnCreep([WORK, WORK, CARRY, CARRY, MOVE, MOVE], newName, {memory: {role: 'upgraderN'}});
+
+var roleUpgraderN = {
+
+    /** @param {Creep} creep **/
+    run: function(creep) {
+
+
+        var desiredRoom = 'W21N25'  // TELL CREEP WHERE TO GO, DO NOTHING ELSE TILL IT GETS THERE
+        var containersInThisRoom = creep.room.find(FIND_STRUCTURES, {
+                filter: (structure) => {
+                    return (structure.structureType == STRUCTURE_CONTAINER) 
+                    && structure.store.getUsedCapacity(RESOURCE_ENERGY) > 0;}});
+
+        //console.log('upgraderN current room: ' + creep.room.name);
+
+        if(creep.room.name != desiredRoom) creep.moveTo(Game.flags.Flag1);
+
+        else
+        {
+
+            if(creep.memory.upgrading && creep.store[RESOURCE_ENERGY] == 0) 
+            {
+                creep.memory.upgrading = false;
+                creep.say('harvest');
+	        }
+	        else if(!creep.memory.upgrading && creep.store.getFreeCapacity() == 0) 
+            {
+    	        creep.memory.upgrading = true;
+	            creep.say('upgrade');
+	        }
+	        
+            if(creep.memory.upgrading) 
+            {
+                if(creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) 
+                {
+                    creep.moveTo(creep.room.controller, {visualizePathStyle: {stroke: '#ffffff'}});
+                }
+            }
+        
+        
+            else 
+            {
+                const singleSource = Game.getObjectById('5bbcabbf9099fc012e63433d');
+                if(containersInThisRoom.length > 0) 
+                    {
+                        if(creep.withdraw(containersInThisRoom[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE)
+                        {
+                            creep.moveTo(containersInThisRoom[0], {visualizePathStyle: {stroke: '#ffffff'}});
+                        }
+                    }
+                else if(creep.harvest(singleSource) == ERR_NOT_IN_RANGE) 
+                {
+                    creep.moveTo(singleSource, {visualizePathStyle: {stroke: '#ffaa00'}}); 
+                } // CLOSE if(creep.harvest(singleSource) == ERR_NOT_IN_RANGE)
+            } //CLOSE else 
+        
+        }
+
+	}
+};
+
+module.exports = roleUpgraderN;

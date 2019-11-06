@@ -7,8 +7,8 @@ var roleTrucker = {
     run: function(creep) {
  
         const MainRoomStorage = Game.getObjectById('5db8a6bc8e7b7671a2f61789');
-        const container_1_W21N25 = Game.getObjectById('5dc080591d44a26b5ff194e9');
-        const container_2_W21N25 = Game.getObjectById('5dc08a0572e2a752b082e075');
+        const container_1_W21N25 = Game.getObjectById('5dc30246eac43256f9751502');
+        const container_2_W21N25 = Game.getObjectById('5dc2f175a7893f45f9f40939');
         
    
         //console.log('TRUCKER MODULE DISPLAYING--> containerW21N25: ' + containerW21N25 + 'MainRoomStorage: ' + MainRoomStorage)

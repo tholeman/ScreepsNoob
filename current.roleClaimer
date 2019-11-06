@@ -1,63 +1,46 @@
-// CODE TO SPAWN A CLAIMER
+// CODE I'M USING TO SPAWN A CLAIMER, IN THE MAIN MODULE
 // Game.spawns['Spawn1'].spawnCreep([CLAIM, MOVE, MOVE, CLAIM ], 'Claimer', {memory: {role: 'claimer', timeInDesiredRoom = 0}});
 
-var roleClaimer = {
+var roleClaimer = 
+{
 
     run: function(creep) {
 	
-        var ControllerW21N25 = '5bbcabbf9099fc012e63433e'
-        var desiredRoom = 'W21N25'  // TELL CREEP WHERE TO GO, DO NOTHING ELSE TILL IT GETS THERE
+        //var ControllerW21N25 = '5bbcabbf9099fc012e63433e'  USED THIS IN ORIGINAL CODE, LEFT IT AS A CHECK FOR WHEN I RAN CONSOLE.LOG CHECKPOINTS
+        var desiredRoom = 'W21N25'                                                              //**** TELL CREEP WHERE TO GO, DO NOTHING ELSE TILL IT GETS THERE
         var timeInDesiredRoom = 0
-
-        //console.log('CLAIMER TOP OF ROLE BLOCK current room: ' + creep.room.name);
 
         if(creep.room.name != desiredRoom)
         {
                 creep.moveTo(Game.flags.Flag2);
                 creep.memory.timeInDesiredRoom=0;
-                //console.log('CLAIMER TOP IF creep.memory.timeInDesiredRoom: ' + creep.memory.timeInDesiredRoom);
         }
         else 
         {
                 if(creep.room.name == desiredRoom) creep.memory.timeInDesiredRoom = creep.memory.timeInDesiredRoom + 1 ;
-                //console.log('CLAIMER FIRST ELSE creep.memory.timeInDesiredRoom: ' + creep.memory.timeInDesiredRoom);
-                
-                if(creep.memory.timeInDesiredRoom < 50)
+                if(creep.memory.timeInDesiredRoom < 40)                                         //****THIS MAKES CREEP WALK RIGHT UP TO CONTROLLER WITH THE FLAG ON IT
                 {
                         creep.moveTo(Game.flags.Flag2);
-                        //console.log('CLAIMER timeInDesiredRoom INCREMENT LOOP creep.memory.timeInDesiredRoom: ' + creep.memory.timeInDesiredRoom);
                 }
                 else
                 {
                         var controllerTarget = creep.room.controller;
-                
-                        //console.log('CLAIMER INSIDE ELSE-IF BLOCK, IN ROOM:' + creep.room + '  CLAIMER controllerTarget:' + controllerTarget);
-                
-                        var claimResult = creep.upgradeController(controllerTarget);
-                
-                        if(claimResult == ERR_NOT_IN_RANGE)
+                        var claimResult = creep.upgradeController(controllerTarget);            //**** TRY TO CLAIM CONTROLLER
+                        if(claimResult == ERR_NOT_IN_RANGE)                                     //**** OR MOVE TO CONTROLLER
                         {
                                 creep.moveTo(controllerTarget);
-                                console.log('CLAIM RESULT: ' + claimResult);
+                                //console.log('CLAIM RESULT: ' + claimResult);                    //**** TO SEE WHAT THE ERROR CODE IS
                         }
                         else
                         {
-                                console.log('CLAIM RESULT ERROR: ' + claimResult);
-                                let reserveResult = creep.reserveController(controllerTarget);
-                                console.log('RESERVE RESULT: ' + reserveResult);
+                                //console.log('CLAIM RESULT ERROR: ' + claimResult);              //**** TO SEE WHAT THE ERROR CODE IS
+                                let reserveResult = creep.reserveController(controllerTarget);  //**** IF UNABLE TO CLAIM, TRY TO RESERVE
+                                //console.log('RESERVE RESULT: ' + reserveResult);                //**** THIS COMES BACK AS ZERO AND IS SUCCESSFUL
                         }
                 
                 }
-/********                else
-                {
-                        console.log('roleCLAIMER SHOULD NEVER GET HERE');
-********/                }
-
+        }
     }
-};
+}
 
 module.exports = roleClaimer;
-
-// Game.creeps['HarvN_12117103'].memory.role = 'harvester';
-// Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE], newName, {memory: {role: 'builder' , building: false}});
-// Game.spawns['Spawn1'].spawnCreep([CLAIM, MOVE, MOVE, CLAIM ], 'Claimer', {memory: {role: 'claimer', timeInDesiredRoom = 0}});

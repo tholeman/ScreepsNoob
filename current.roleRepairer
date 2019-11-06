@@ -1,70 +1,68 @@
+// REPAIR CONTAINERS FIRST, THEN RAMPARTS UP TO THE PERCENTAGE IN rampartRepairFactor, THEN ANYTHING EXCEPT WALLS
+// Game.spawns['Spawn1'].spawnCreep([WORK, WORK, CARRY, MOVE, MOVE, MOVE], newName, {memory: {role: 'repairer' , repairing: false}});
+//
+
 var roleRepairer = {
 
-    /** @param {Creep} creep **/
     run: function(creep) {
 
-        //
+        var rampartRepairFactor = .003   // at10M max hits, .001=10k, .002=20k
+
         //SET REPAIRER MEMORY BASED ON CARGO FULL OR EMPTY
         //
-        if(creep.memory.repairing && creep.carry.energy == 0) {
-            creep.memory.repairing = false;
-            //creep.say('harvest');
-        } //CLOSE if(creep.memory.repairing && creep.carry.energy == 0)
-
-        if(!creep.memory.repairing && creep.carry.energy == creep.carryCapacity) {
-            creep.memory.repairing = true;
-            //creep.say('repairing');
-        } //CLOSE if(!creep.memory.repairing && creep.carry.energy == creep.carryCapacity)
+        if(creep.memory.repairing && creep.carry.energy == 0) creep.memory.repairing = false;
+            else if(!creep.memory.repairing && creep.carry.energy == creep.carryCapacity) creep.memory.repairing = true;
         
-        //
         // IF REPAIRER MEMORY repairing==true FIND DAMAGED SITES AND REPAIR
         //
-        if(creep.memory.repairing) {
-//                                                  var targets = creep.room.find(FIND_STRUCTURES, {filter: (structure) => {return (structure.structureType == STRUCTURE_CONTAINER;}});
-// THIS ONE WAS USED LAST-->          var targets = creep.room.find(FIND_STRUCTURES, {filter: object => object.hits < (object.hitsMax)});
-//                                                 var targets = creep.room.find(FIND_STRUCTURES, {
-//                                                     filter: (structure) => {return (structure.structureType == STRUCTURE_CONTAINER)});
-
-//            var targets = creep.room.find(FIND_STRUCTURES, {
-//                filter: (structure) => {return (structure.structureType == STRUCTURE_CONTAINER)});
-
-
-            var targets = creep.room.find(FIND_STRUCTURES, {
+        if(creep.memory.repairing)
+        {
+            var damagedContainers = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
-                    return (structure.structureType == STRUCTURE_CONTAINER) 
-                    && structure.hits < structure.hitsMax;}});
+                    return (structure.structureType == STRUCTURE_CONTAINER) && structure.hits < structure.hitsMax;}});
 
-// {filter: (structure) => structure.hits < structure.hitsMax * towerRepairFactor});
+            if(damagedContainers.length > 0) var targets=damagedContainers;
+            else
+            {
+                var damagedRamparts = creep.room.find(FIND_STRUCTURES, {
+                filter: (structure) => {
+                    return (structure.structureType == STRUCTURE_RAMPART) && structure.hits < (structure.hitsMax * rampartRepairFactor);}});
+                if(damagedRamparts.length > 0) var targets=damagedRamparts;
+                else 
+                {
+                    var targets = creep.room.find(FIND_STRUCTURES, {
+                        filter: (structure) => {
+                            return (structure.structureType != STRUCTURE_WALL) && structure.hits < structure.hitsMax;}});
+                }
+            }
 
-                
-                targets.sort((a,b) => a.hits - b.hits);
+               
+                if(Game.time % 10 == 0) targets.sort((a,b) => a.hits - b.hits);
                 if(targets.length) {
                     if(creep.repair(targets[0]) == ERR_NOT_IN_RANGE) {creep.moveTo(targets[0], {visualizePathStyle: {stroke: '#ffffff'}});
                     } //CLOSE if(creep.repair(targets[0])
                 } //CLOSE if(targets.length) 
+
         } //CLOSE if(creep.memory.repairing)
+
 
         //
         // ELSE IF REPAIRER MEMORY repairing==false FIND SOURCE OF ENERGY AND HARVEST
         //
         else {
-            // PULL RESOURCES FROM NORTH ROOM, THEN REPAIR THERE
-            //const singleSource = Game.getObjectById('5bbcabbf9099fc012e63433d');
-            //if(creep.harvest(singleSource) == ERR_NOT_IN_RANGE) {
-            //    creep.moveTo(singleSource, {visualizePathStyle: {stroke: '#ffaa00'}});
-            //
             //PULL RESOURCES FROM MAIN ROOM SECOND SOURCE, THEN REPAIR THERE
-            var sources = creep.room.find(FIND_SOURCES);
-            if(creep.harvest(sources[1]) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(sources[1], {visualizePathStyle: {stroke: '#ffaa00'}});
-            }
+            //
+             var sources = creep.room.find(FIND_SOURCES);
+             if(creep.harvest(sources[1]) == ERR_NOT_IN_RANGE) creep.moveTo(sources[1], {visualizePathStyle: {stroke: '#ffaa00'}});
+                        
+            // PULL RESOURCES FROM NORTH ROOM, THEN REPAIR THERE
+            // const singleSource = Game.getObjectById('5bbcabbf9099fc012e63433d');
+            // if(creep.harvest(singleSource) == ERR_NOT_IN_RANGE) creep.moveTo(singleSource, {visualizePathStyle: {stroke: '#ffaa00'}});
+            
             // PULL ENERGY FROM MAIN ROOM STORAGE, THEN REPAIR THERE
-            //const MainRoomStorage = Game.getObjectById('5db8a6bc8e7b7671a2f61789');
-            //    if(creep.withdraw(MainRoomStorage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE)
-            //    {
-            //        creep.moveTo(MainRoomStorage, {visualizePathStyle: {stroke: '#ffffff'}});
-            //    }  
-             
+            // const MainRoomStorage = Game.getObjectById('5db8a6bc8e7b7671a2f61789');
+            // if(creep.withdraw(MainRoomStorage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) creep.moveTo(MainRoomStorage, {visualizePathStyle: {stroke: '#ffffff'}});
+                         
         }; 
     } // CLOSE run: function(creep) 
 } //CLOSE var roleRepairer = 

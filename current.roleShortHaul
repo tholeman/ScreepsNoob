@@ -9,10 +9,12 @@ var roleShortHaul = {
         var tower1 = Game.getObjectById('5dbc93dbe7edca071c4e77de');
         var tower2 = Game.getObjectById('5dbfddd7e65badb03eeac9a5');
         var MainRoomStorage = Game.getObjectById('5db8a6bc8e7b7671a2f61789');
+
+        var upgradeFeeder = Game.getObjectById('5dc24d4d5b12dcaa2cdf2d55');
         var containersInThisRoom = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
                     return (structure.structureType == STRUCTURE_CONTAINER) 
-                    && structure.store.getUsedCapacity(RESOURCE_ENERGY) > 0;}});
+                    && structure.store.getUsedCapacity(RESOURCE_ENERGY)  > 0 && structure != upgradeFeeder;}});
                         
         //console.log('tower1: ' + tower1 + ' tower2: ' + tower2);
 
@@ -38,11 +40,18 @@ var roleShortHaul = {
                 creep.moveTo(tower1, {visualizePathStyle: {stroke: '#ffffff'}});
             }
         }
-       else if(tower2.store.getFreeCapacity(RESOURCE_ENERGY) > 0)
+        else if(tower2.store.getFreeCapacity(RESOURCE_ENERGY) > 0)
         {
            if(creep.transfer(tower2, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE)
             {
                 creep.moveTo(tower2, {visualizePathStyle: {stroke: '#ffffff'}});
+            }
+        }
+        else if(upgradeFeeder.store.getFreeCapacity(RESOURCE_ENERGY) > 1000)
+        {
+           if(creep.transfer(upgradeFeeder, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE)
+            {
+                creep.moveTo(upgradeFeeder, {visualizePathStyle: {stroke: '#aa00ff'}});
             }
         }
         else 

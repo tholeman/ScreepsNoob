@@ -32,8 +32,12 @@ var roleBuilder = {
             // IF BUILDER MEMORY building==true AND NO CONSTRUCTION SITES, FIND REPAIR SITES AND REPAIR
             //
             else {
-                const targets = creep.room.find(FIND_STRUCTURES, {filter: object => object.hits < object.hitsMax});
-                targets.sort((a,b) => a.hits - b.hits);
+ 
+
+                var targets = creep.room.find(FIND_STRUCTURES, {
+                filter: (structure) => {
+                    return (structure.structureType != STRUCTURE_WALL) && (structure.hits < structure.hitsMax);}});
+                if(Game.time % 5 == 0) targets.sort((a,b) => a.hits - b.hits);
                 if(targets.length) {
                     if(creep.repair(targets[0]) == ERR_NOT_IN_RANGE) {creep.moveTo(targets[0], {visualizePathStyle: {stroke: '#ffffff'}});
                     } //CLOSE if(creep.repair(targets[0])
@@ -53,3 +57,5 @@ var roleBuilder = {
 } //CLOSE var roleBuilder = 
 
 module.exports = roleBuilder;
+
+              

@@ -6,7 +6,7 @@ var roleRepairer = {
 
     run: function(creep) {
 
-        var rampartRepairFactor = .003   // at10M max hits, .001=10k, .002=20k
+        var rampartRepairFactor = .004   // at10M max hits, .001=10k, .002=20k
 
         //SET REPAIRER MEMORY BASED ON CARGO FULL OR EMPTY
         //

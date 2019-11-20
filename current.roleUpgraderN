@@ -15,10 +15,14 @@ var roleUpgraderN = {
 
         //console.log('upgraderN current room: ' + creep.room.name);
 
-        if(creep.room.name != desiredRoom) creep.moveTo(Game.flags.Flag1);
-
+        if(creep.room.name != desiredRoom)
+        {
+            creep.moveTo(Game.flags.Flag1);
+        }
         else
         {
+var TEST=creep.upgradeController(creep.room.controller);
+//console.log('upgraderN: ' + creep.room.name + ' ' + creep.memory.upgrading + ' ' + creep.room.controller + ' ' + TEST);
 
             if(creep.memory.upgrading && creep.store[RESOURCE_ENERGY] == 0) 
             {

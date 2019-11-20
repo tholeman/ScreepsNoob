@@ -3,31 +3,19 @@
 var roleRH = {
     run: function(creep) {
 
-        //console.log('BuilderNorth current room: ' + creep.room.name);
-
         var desiredRoom = 'W21N25'  // TELL CREEP WHERE TO GO, DO NOTHING ELSE TILL IT GETS THERE
 
-        //
-        //SET BUILDER MEMORY BASED ON CARGO FULL OR EMPTY
-        //
-        if(creep.memory.building && creep.carry.energy == 0) {
-            creep.memory.building = false;
-        }
-        if(!creep.memory.building && creep.carry.energy == creep.carryCapacity) {
-            creep.memory.building = true;
-        }
-        var containersInThisRoom = creep.room.find(FIND_STRUCTURES, {
-            filter: (structure) => {
-                return (structure.structureType == STRUCTURE_CONTAINER) 
-                && structure.store.getUsedCapacity(RESOURCE_ENERGY) > 0;}});
-
+        if(creep.memory.building && creep.carry.energy == 0) creep.memory.building = false;
+        else if(!creep.memory.building && creep.carry.energy == creep.carryCapacity) creep.memory.building = true;
+        
         if(creep.room.name != desiredRoom) creep.moveTo(Game.flags.Flag1);
         
 
         //
         // IF BUILDER MEMORY building==true FIND CONSTRUCTION SITES AND BUILD
         //
-        else if(creep.memory.building) {
+        else if(creep.memory.building)
+        {
             var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
             
             if(targets.length) {
@@ -38,10 +26,22 @@ var roleRH = {
             //
             // IF BUILDER MEMORY building==true AND NO CONSTRUCTION SITES, FIND REPAIR SITES AND REPAIR
             //
-            else {
-                const targets = creep.room.find(FIND_STRUCTURES, {filter: object => object.hits < object.hitsMax});
+            else 
+            {
+                var damagedContainers = creep.room.find(FIND_STRUCTURES, {
+                    filter: (structure) => {
+                        return (structure.structureType == STRUCTURE_CONTAINER) && structure.hits < structure.hitsMax;}});
+                if(damagedContainers.length > 0) var targets=damagedContainers;
+                else
+                {
+                    var targets = creep.room.find(FIND_STRUCTURES, {
+                    filter: (structure) => {
+                        return (structure.structureType != STRUCTURE_WALL) && structure.hits < structure.hitsMax;}});
+                }
+                //if(Game.time % 5 == 0) 
                 targets.sort((a,b) => a.hits - b.hits);
-                if(targets.length) {
+                if(targets.length)
+                {
                     if(creep.repair(targets[0]) == ERR_NOT_IN_RANGE) {creep.moveTo(targets[0], {visualizePathStyle: {stroke: '#ffffff'}});
                     } //CLOSE if(creep.repair(targets[0])
                 } //CLOSE if(targets.length) 
@@ -53,6 +53,12 @@ var roleRH = {
         //
         else {
             const singleSource = Game.getObjectById('5bbcabbf9099fc012e63433d');
+            
+            var containersInThisRoom = creep.room.find(FIND_STRUCTURES, {
+            filter: (structure) => {
+                return (structure.structureType == STRUCTURE_CONTAINER) 
+                && structure.store.getUsedCapacity(RESOURCE_ENERGY) > 0;}});
+
             if(containersInThisRoom.length > 0) 
                 {
                     if(creep.withdraw(containersInThisRoom[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE)

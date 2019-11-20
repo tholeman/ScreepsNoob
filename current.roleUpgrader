@@ -12,7 +12,7 @@ var roleUpgrader = {
         }
         else 
         {
-            var upgradeFeeder = Game.getObjectById('5dc24d4d5b12dcaa2cdf2d55');
+            const upgradeFeeder = Game.rooms['W21N24'].lookForAt('structure', 38, 10)[0];
             if(creep.withdraw(upgradeFeeder, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) creep.moveTo(upgradeFeeder);
         }
 	}

@@ -1,45 +1,62 @@
-// CODE I'M USING TO SPAWN A CLAIMER, IN THE MAIN MODULE
-// Game.spawns['Spawn1'].spawnCreep([CLAIM, MOVE, MOVE, CLAIM ], 'Claimer', {memory: {role: 'claimer', timeInDesiredRoom = 0}});
-
+// CODE I'M USING TO SPAWN A CLAIMER, IN role.populationControl
+// Game.spawns['Spawn1'].spawnCreep([CLAIM, MOVE, MOVE, CLAIM ], 'Claimer', {memory: {role: 'claimer', desiredRoom: 'W21N25', timeInDesiredRoom = 0}});
+// OR
+// Game.spawns['Spawn1'].spawnCreep([CLAIM, MOVE, MOVE, CLAIM ], 'Claimer', {memory: {role: 'claimer', desiredRoom: 'W21N23', timeInDesiredRoom = 0}});
 var roleClaimer = 
 {
 
     run: function(creep) {
 	
-        //var ControllerW21N25 = '5bbcabbf9099fc012e63433e'  USED THIS IN ORIGINAL CODE, LEFT IT AS A CHECK FOR WHEN I RAN CONSOLE.LOG CHECKPOINTS
-        var desiredRoom = 'W21N25'                                                              //**** TELL CREEP WHERE TO GO, DO NOTHING ELSE TILL IT GETS THERE
+        var desiredRoom = creep.memory.desiredRoom
         var timeInDesiredRoom = 0
-
+//console.log(Game.time + ' ' + creep.name + ' ' +creep.room + ' ' + creep.room.);
         if(creep.room.name != desiredRoom)
         {
-                creep.moveTo(Game.flags.Flag2);
+                if(desiredRoom=='W21N25') creep.moveTo(Game.flags.W21N25, {visualizePathStyle: {stroke: '#ff0088'}});
+                else if (desiredRoom=='W21N23') creep.moveTo(Game.flags.W21N23, {visualizePathStyle: {stroke: '#ff0088'}});
+                else if (desiredRoom=='W22N24') creep.moveTo(Game.flags.W22N24, {visualizePathStyle: {stroke: '#ff0088'}});
+                else console.log('CLAIMER SHOULD NEVER GET HERE');
+                
                 creep.memory.timeInDesiredRoom=0;
         }
         else 
         {
-                if(creep.room.name == desiredRoom) creep.memory.timeInDesiredRoom = creep.memory.timeInDesiredRoom + 1 ;
-                if(creep.memory.timeInDesiredRoom < 40)                                         //****THIS MAKES CREEP WALK RIGHT UP TO CONTROLLER WITH THE FLAG ON IT
+            if(creep.room.name == desiredRoom) creep.memory.timeInDesiredRoom++ ;
+            if(creep.memory.timeInDesiredRoom < 10)                                         //****THIS MAKES CREEP WALK RIGHT UP TO CONTROLLER WITH THE FLAG ON IT
+            {
+                if(desiredRoom=='W21N25') creep.moveTo(Game.flags.W21N25, {visualizePathStyle: {stroke: '#ff0088'}});
+                else if (desiredRoom=='W21N23') creep.moveTo(Game.flags.W21N23, {visualizePathStyle: {stroke: '#ff0088'}});
+                else if (desiredRoom=='W22N24') creep.moveTo(Game.flags.W22N24, {visualizePathStyle: {stroke: '#ff0088'}});
+                else console.log('CLAIMER: if(creep.memory.timeInDesiredRoom < 10) SHOULD NEVER GET HERE');
+            }
+            else
+            {
+                var controllerTarget = creep.room.controller;
+                if(!creep.pos.isNearTo(controllerTarget))
                 {
-                        creep.moveTo(Game.flags.Flag2);
+                    if(desiredRoom=='W21N25') creep.moveTo(Game.flags.W21N25, {visualizePathStyle: {stroke: '#ff0088'}});
+                    else if (desiredRoom=='W21N23') creep.moveTo(Game.flags.W21N23, {visualizePathStyle: {stroke: '#ff0088'}});
+                    else if (desiredRoom=='W22N24') creep.moveTo(Game.flags.W22N24, {visualizePathStyle: {stroke: '#ff0088'}});
+                    else console.log('CLAIMER: if(creep.memory.timeInDesiredRoom < 10) SHOULD NEVER GET HERE');
                 }
-                else
+
+                var claimResult = creep.upgradeController(controllerTarget[0]);            //**** TRY TO CLAIM CONTROLLER
+                //console.log('claimResult: ' + claimResult);
+                if(claimResult == ERR_NOT_IN_RANGE)                                     //**** OR MOVE TO CONTROLLER
                 {
-                        var controllerTarget = creep.room.controller;
-                        var claimResult = creep.upgradeController(controllerTarget);            //**** TRY TO CLAIM CONTROLLER
-                        if(claimResult == ERR_NOT_IN_RANGE)                                     //**** OR MOVE TO CONTROLLER
-                        {
-                                creep.moveTo(controllerTarget);
-                                //console.log('CLAIM RESULT: ' + claimResult);                    //**** TO SEE WHAT THE ERROR CODE IS
-                        }
-                        else
-                        {
-                                //console.log('CLAIM RESULT ERROR: ' + claimResult);              //**** TO SEE WHAT THE ERROR CODE IS
-                                let reserveResult = creep.reserveController(controllerTarget);  //**** IF UNABLE TO CLAIM, TRY TO RESERVE
-                                //console.log('RESERVE RESULT: ' + reserveResult);                //**** THIS COMES BACK AS ZERO AND IS SUCCESSFUL
-                        }
+                    creep.moveTo(controllerTarget.pos);
+                    //console.log('CLAIM RESULT: ' + claimResult);                    //**** TO SEE WHAT THE ERROR CODE IS
+                }
+                    else
+                    {
+                            //console.log('CLAIM RESULT ERROR: ' + claimResult);              //**** TO SEE WHAT THE ERROR CODE IS
+                            let reserveResult = creep.reserveController(controllerTarget);  //**** IF UNABLE TO CLAIM, TRY TO RESERVE
+                            //console.log('RESERVE RESULT: ' + reserveResult);                //**** THIS COMES BACK AS ZERO AND IS SUCCESSFUL
+                    }
                 
-                }
-        }
+            }
+
+        } // END ELSE
     }
 }
 

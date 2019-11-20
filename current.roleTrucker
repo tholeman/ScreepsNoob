@@ -5,11 +5,11 @@ var roleTrucker = {
 
     /** @param {Creep} creep **/
     run: function(creep) {
- 
+
         const MainRoomStorage = Game.getObjectById('5db8a6bc8e7b7671a2f61789');
-        const container_1_W21N25 = Game.getObjectById('5dc30246eac43256f9751502');
-        const container_2_W21N25 = Game.getObjectById('5dc2f175a7893f45f9f40939');
-        
+        const container_1_W21N25 = Game.getObjectById('5dcafc7b949e9a5ee9239d75');
+        const container_2_W21N25 = Game.getObjectById('5dcafc7b949e9a5ee9239d75');
+        if(Game.time % 12 == 0)  creep.say('Breakr 1-9');
    
         //console.log('TRUCKER MODULE DISPLAYING--> containerW21N25: ' + containerW21N25 + 'MainRoomStorage: ' + MainRoomStorage)
         //console.log('container_1_W21N25.store.getUsedCapacity() ' + container_1_W21N25.store.getUsedCapacity() + 'container_2_W21N25.store.getCapacity() ' + container_2_W21N25.store.getCapacity() )

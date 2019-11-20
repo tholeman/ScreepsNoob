@@ -1,0 +1,35 @@
+//******** SUICIDE CODE
+//******** IF A CREEP GETS DOWN TO 200 TICKS LEFT TO LIVE, CHECK IT FOR EMPTY, EMPTY IT INTO STORAGE IF ITS NOT EMPTY, THEN SUICIDE
+
+var roleSuicide = {
+
+    /** @param {Creep} creep **/
+    run: function(creep) {
+ 
+        const MainRoomStorage = Game.getObjectById('5db8a6bc8e7b7671a2f61789');
+           
+        if(creep.store.getUsedCapacity() > 0)
+        {
+            if(creep.store.getUsedCapacity() > 0 && creep.ticksToLive < 150)
+            {
+                console.log('SUICIDE--> ' + creepRole + ' CARRYING: ' + creep.store.getUsedCapacity() + ' OF SOMETHING WITH ' + creep.ticksToLive + ' TICKS TO LIVE!');
+                creep.memory.hadStuff = creep.store.getUsedCapacity();
+            }
+           if(creep.transfer(MainRoomStorage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE)
+            {
+                creep.moveTo(MainRoomStorage, {visualizePathStyle: {stroke: '#000000'}});
+            }
+            else for(const resourceType in creep.carry) 
+                {
+                    creep.transfer(storage, resourceType);
+                }
+        }   
+        else
+        {
+            console.log('SUICIDE--> ' + creep + 'WHO WAS CARRYING ' + creep.memory.hadStuff + ' DYING WITH ' + creep.ticksToLive + ' TICKS TO LIVE!')
+        }
+
+    } // CLOSE run: function(creep) 
+
+} //CLOSE var 
+module.exports = roleSuicide;

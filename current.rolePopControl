@@ -1,0 +1,153 @@
+var rolePopulationControl = {
+
+    run: function(creep) {
+
+    var harvestersCount = _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester');
+    var upgradersCount = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader');
+    var upgraderNCount = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgraderN');
+    var buildersCount = _.filter(Game.creeps, (creep) => creep.memory.role == 'builder');
+    var repairersCount = _.filter(Game.creeps, (creep) => creep.memory.role == 'repairer');
+    var RHCount = _.filter(Game.creeps, (creep) => creep.memory.role == 'remoteharv');
+    var scoutCount = _.filter(Game.creeps, (creep) => creep.memory.role == 'scout');
+    var harvNCount = _.filter(Game.creeps, (creep) => creep.memory.role == 'harvN');
+    var truckerCount = _.filter(Game.creeps, (creep) => creep.memory.role == 'trucker');
+    var shorthaulCount = _.filter(Game.creeps, (creep) => creep.memory.role == 'shorthaul');
+    var claimerCount = _.filter(Game.creeps, (creep) => creep.memory.role == 'claimer');
+    var desiredShrtHaul = 3;
+    var desiredHarvs = 1;
+    var desiredBuilds = 3;
+    var desiredReps = 3;
+    var desiredRemHarvBld = 1;
+    var desiredUpgraderN = 0;
+    var desiredHarvN = 1;
+    var desiredTrucker = 3;
+    var desiredScouts = 0;
+    var desiredClaimer = 3;
+
+    var desiredUpgrs = 1;    
+    const MainRoomStorage = Game.getObjectById('5db8a6bc8e7b7671a2f61789');
+    if(MainRoomStorage.store.getUsedCapacity(RESOURCE_ENERGY) > 200000 ) desiredUpgrs = 3;
+    else if(MainRoomStorage.store.getUsedCapacity(RESOURCE_ENERGY) > 75000 ) desiredUpgrs = 2;
+    else if(MainRoomStorage.store.getUsedCapacity(RESOURCE_ENERGY) < 50000 ) desiredUpgrs = 0;
+
+    var missingRoomW21N25 = true;
+    var missingRoomW21N23 = true;
+    var missingRoomW22N24 = true;
+    
+    for(var name in Memory.creeps) 
+    {
+        if(!Game.creeps[name])
+        {
+            delete Memory.creeps[name];
+            console.log('Clearing non-existing creep memory:', name);
+        }
+        else if(Game.creeps[name].memory.role == 'claimer')
+            {
+                if(Game.creeps[name].memory.desiredRoom == 'W21N25') missingRoomW21N25 = false;
+                else if(Game.creeps[name].memory.desiredRoom == 'W21N23') missingRoomW21N23 = false;
+                else if(Game.creeps[name].memory.desiredRoom == 'W22N24') missingRoomW22N24 = false;
+                //console.log(Game.time + ' ' + name + ' ' + Game.creeps[name].memory.desiredRoom + ' missingRoomW21N25:' + missingRoomW21N25 + ' missingRoomW21N23:' + missingRoomW21N23 + ' missingRoomW22N24:' + missingRoomW22N24);
+            }
+        
+        //console.log(Game.creeps[name] + ' ' + Game.creeps[name].memory.role);
+        
+        
+        
+    }
+    
+    console.log(Game.time + ' ShrtHaul:' + shorthaulCount.length + '/' + desiredShrtHaul + ' Harvs:' + harvestersCount.length + '/' + desiredHarvs 
+        + ' Upgr:' + upgradersCount.length + '/' + desiredUpgrs + '  Build:' + buildersCount.length + '/' + desiredBuilds 
+        + '  Rep:' + repairersCount.length + '/' + desiredReps + '  RH:' + RHCount.length + '/' + desiredRemHarvBld 
+        + ' UpgrN:' + upgraderNCount.length + '/' + desiredUpgraderN + ' HarvN:' + harvNCount.length + '/' + desiredHarvN
+        + ' N-Trucker:' + truckerCount.length + '/' + desiredTrucker + ' Scout:' + scoutCount.length + '/' + desiredScouts
+        + ' Claimer:' + claimerCount.length + '/' + desiredClaimer );
+
+
+
+
+    if(shorthaulCount.length < desiredShrtHaul) {
+        var newName = 'ShortHaul' + Game.time;
+        console.log('Spawning new ShortHaul: ' + newName);
+        Game.spawns['Spawn1'].spawnCreep([CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE], newName, {memory: {role: 'shorthaul'}});
+    }
+    else if(harvestersCount.length < desiredHarvs) 
+        {
+            var newName = 'Harv' + Game.time;
+            console.log('Spawning new harvester: ' + newName);
+            Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, CARRY, MOVE], newName, {memory: {role: 'harvester'}});
+        }
+        else if(repairersCount.length < desiredReps) 
+            {
+            var newName = 'Repairer' + Game.time;
+            console.log('Spawning new repairer: ' + newName);
+            Game.spawns['Spawn1'].spawnCreep([WORK, WORK, CARRY, MOVE, MOVE, MOVE], newName, {memory: {role: 'repairer' , repairing: false}});
+            }
+
+            else if(buildersCount.length < desiredBuilds) 
+                {
+                    var newName = 'Builder' + Game.time;
+                    console.log('Spawning new builder: ' + newName);
+                    Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE], newName, {memory: {role: 'builder' , building: false}});
+                }
+                else if(upgradersCount.length < desiredUpgrs) 
+                    {
+                        var newName = 'Upgr' + Game.time;
+                        console.log('Spawning new upgrader: ' + newName);
+                        Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, CARRY, MOVE], newName, {memory: {role: 'upgrader' , upgrading: true}});
+                    }
+                    else if(scoutCount.length < desiredScouts) 
+                        {
+                            var newName = 'Scout' + Game.time;
+                            console.log('Spawning new scout: ' + newName);
+                            Game.spawns['Spawn1'].spawnCreep([MOVE], newName, {memory: {role: 'scout'}});
+                        }
+                        else if(harvNCount.length < desiredHarvN)
+                            {
+                                var newName = 'HarvN_' + Game.time;
+                                console.log('Spawning new HarvN: ' + newName);
+                                Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, CARRY, MOVE], newName, {memory: {role: 'harvN'}});
+                            }
+                            else if(RHCount.length < desiredRemHarvBld) 
+                                {
+                                    var newName = 'RemHarvBld' + Game.time;
+                                    console.log('Spawning new RemHarvBld: ' + newName);
+                                    Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE], newName, {memory: {role: 'remoteharv' , building: false}});
+                                }
+                                else if(truckerCount.length < desiredTrucker)
+                                    {
+                                        var newName = 'Ntrucker' + Game.time;
+                                        console.log('Spawning new Ntrucker: ' + newName);
+                                        Game.spawns['Spawn1'].spawnCreep([CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE], newName, {memory: {role: 'trucker', timeInDesiredRoom: 0}});
+                                    } 
+                                    else if(claimerCount.length < desiredClaimer)
+                                        {
+                                            if(missingRoomW21N25)
+                                            {
+                                                var newName = 'ClaimW21N25-' + Game.time;
+                                                console.log('Spawning new claimer: ' + newName);
+                                                Game.spawns['Spawn1'].spawnCreep([CLAIM, CLAIM, MOVE, MOVE], newName, {memory: {role: 'claimer', desiredRoom: 'W21N25' , timeInDesiredRoom: 0}});
+                                            }
+                                            else if(missingRoomW21N23)
+                                            {
+                                                var newName = 'ClaimW21N23-' + Game.time;
+                                                console.log('Spawning new claimer: ' + newName);
+                                                Game.spawns['Spawn1'].spawnCreep([CLAIM, CLAIM, MOVE, MOVE], newName, {memory: {role: 'claimer', desiredRoom: 'W21N23' , timeInDesiredRoom: 0}});
+                                            }
+                                            else if(missingRoomW22N24)
+                                            {
+                                                var newName = 'ClaimW22N24-' + Game.time;
+                                                console.log('Spawning new claimer: ' + newName);
+                                                Game.spawns['Spawn1'].spawnCreep([CLAIM, CLAIM, MOVE, MOVE], newName, {memory: {role: 'claimer', desiredRoom: 'W22N24' , timeInDesiredRoom: 0}});
+                                            }
+                                        }
+                                        else if(upgraderNCount.length < desiredUpgraderN) 
+                                            {
+                                                var newName = 'UpgrN' + Game.time;
+                                                console.log('Spawning new upgrader: ' + newName);
+                                                Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE], newName, {memory: {role: 'upgraderN'}});
+                                            }
+    }   // END run: function(creep)
+};      // END var rolePopulationControl
+
+module.exports = rolePopulationControl;
+    

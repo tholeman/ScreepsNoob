@@ -1,58 +1,90 @@
-//******** SHORT HAUL TRUCKER CODE, MAIN ROOM ONLY, MOVER ENERGY FROM STORAGE TO SPAWN, EXPANSIONS AND TOWER
+//******** SHORT HAUL TRUCKER CODE, MAIN ROOM ONLY, MOVE ENERGY FROM STORAGE TO SPAWN, EXPANSIONS, TOWER, AND FEEDER CONTAINER FOR UPGRADERS
 // CODE TO SPAWN A TRUCKER --> Game.spawns['Spawn1'].spawnCreep([CARRY, CARRY, CARRY, MOVE, MOVE], 'TruckerManual', {memory: {role: 'trucker'}});
 
 var roleShortHaul = {
 
-    /** @param {Creep} creep **/
     run: function(creep) {
  
         var tower1 = Game.getObjectById('5dbc93dbe7edca071c4e77de');
         var tower2 = Game.getObjectById('5dbfddd7e65badb03eeac9a5');
         var MainRoomStorage = Game.getObjectById('5db8a6bc8e7b7671a2f61789');
+        //const upgradeFeeder = Game.getObjectById('5dc24d4d5b12dcaa2cdf2d55');
+        const southWestContainer = Game.rooms['W21N24'].lookForAt('structure', 16, 19)[0];
+        const upgradeFeeder = Game.rooms['W21N24'].lookForAt('structure', 38, 10)[0];
+        if(upgradeFeeder) var upgradeFeederGauge = upgradeFeeder.store.getUsedCapacity(RESOURCE_ENERGY);
+            if(upgradeFeederGauge < 100)
+            {
+                creep.memory.fillFeeder = true;
+            }
+            if(upgradeFeederGauge > 899)
+            {
+                creep.memory.fillFeeder = false;
+            }
+        var tower1Gauge = tower1.store.getUsedCapacity(RESOURCE_ENERGY);
+        var tower2Gauge = tower2.store.getUsedCapacity(RESOURCE_ENERGY);
+            if(tower1Gauge < 250)
+            {
+                creep.memory.fillTower1 = true;
+            }
+            if(tower1Gauge > 899)
+            {
+                creep.memory.fillTower1 = false;
+            }
+            if(tower2Gauge < 250)
+            {
+                creep.memory.fillTower2 = true;
+            }
+            if(tower2Gauge > 899)
+            {
+                creep.memory.fillTower2 = false;
+            }
 
-        var upgradeFeeder = Game.getObjectById('5dc24d4d5b12dcaa2cdf2d55');
         var containersInThisRoom = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
                     return (structure.structureType == STRUCTURE_CONTAINER) 
-                    && structure.store.getUsedCapacity(RESOURCE_ENERGY)  > 0 && structure != upgradeFeeder;}});
-                        
-        //console.log('tower1: ' + tower1 + ' tower2: ' + tower2);
+                    && structure.store.getUsedCapacity(RESOURCE_ENERGY)  > 150 && structure != upgradeFeeder && structure != southWestContainer;}});
 
+        var resourceDropsInThisRoom = creep.room.find(FIND_DROPPED_RESOURCES);
+                        
         if(creep.store.getUsedCapacity(RESOURCE_ENERGY) < 50)
         {
-                
-                if(containersInThisRoom.length > 0) 
+            if(resourceDropsInThisRoom.length > 0)
+            {
+                if(creep.withdraw(resourceDropsInThisRoom[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE)
                 {
-                    if(creep.withdraw(containersInThisRoom[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE)
-                    {
-                        creep.moveTo(containersInThisRoom[0], {visualizePathStyle: {stroke: '#ffffff'}});
-                    }
+                    creep.moveTo(resourceDropsInThisRoom[0], {visualizePathStyle: {stroke: '#ff0000'}});
                 }
-                else if(creep.withdraw(MainRoomStorage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE)
+            } 
+            else if(containersInThisRoom.length > 0) 
+            {
+                if(creep.withdraw(containersInThisRoom[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE)
                 {
-                    creep.moveTo(MainRoomStorage, {visualizePathStyle: {stroke: '#ffffff'}});
+                    creep.moveTo(containersInThisRoom[0], {visualizePathStyle: {stroke: '#ffffff'}});
                 }
+            }
+            else if(creep.withdraw(MainRoomStorage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE)
+            {
+                creep.moveTo(MainRoomStorage, {visualizePathStyle: {stroke: '#ffffff'}});
+            }
         }
-        else if(tower1.store.getFreeCapacity(RESOURCE_ENERGY) > 100)
+        else if(creep.memory.fillTower1)
         {
             if(creep.transfer(tower1, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE)
             {
-                creep.moveTo(tower1, {visualizePathStyle: {stroke: '#ffffff'}});
+                creep.moveTo(tower1, {visualizePathStyle: {stroke: '#ff0000'}});
             }
         }
-        else if(tower2.store.getFreeCapacity(RESOURCE_ENERGY) > 0)
+        else if(creep.memory.fillTower2)
         {
            if(creep.transfer(tower2, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE)
             {
-                creep.moveTo(tower2, {visualizePathStyle: {stroke: '#ffffff'}});
+                creep.moveTo(tower2, {visualizePathStyle: {stroke: '#ff0000'}});
             }
         }
-        else if(upgradeFeeder.store.getFreeCapacity(RESOURCE_ENERGY) > 1000)
+        else if (creep.memory.fillFeeder)
         {
-           if(creep.transfer(upgradeFeeder, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE)
-            {
-                creep.moveTo(upgradeFeeder, {visualizePathStyle: {stroke: '#aa00ff'}});
-            }
+            if(creep.transfer(upgradeFeeder, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) 
+            creep.moveTo(upgradeFeeder, {visualizePathStyle: {stroke: '#aa00ff'}});
         }
         else 
         {

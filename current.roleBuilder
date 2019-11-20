@@ -3,19 +3,12 @@ var roleBuilder = {
     /** @param {Creep} creep **/
     run: function(creep) {
 
+        var rampartRepairFactor = .004   // at10M max hits, .001=10k, .002=20k
         //
         //SET BUILDER MEMORY BASED ON CARGO FULL OR EMPTY
         //
-        if(creep.memory.building && creep.carry.energy == 0) {
-            creep.memory.building = false;
-            //creep.say('🔄 harvest');
-            //console.log('Set creep building memory:', creep.memory.building);
-        }
-        if(!creep.memory.building && creep.carry.energy == creep.carryCapacity) {
-            creep.memory.building = true;
-            //creep.say('🚧 build');
-            //console.log('Set creep building memory:', creep.memory.building);
-        }
+        if(creep.memory.building && creep.carry.energy == 0) creep.memory.building = false;
+            else if(!creep.memory.building && creep.carry.energy == creep.carryCapacity) creep.memory.building = true;
         
         //
         // IF BUILDER MEMORY building==true FIND CONSTRUCTION SITES AND BUILD
@@ -31,17 +24,25 @@ var roleBuilder = {
             //
             // IF BUILDER MEMORY building==true AND NO CONSTRUCTION SITES, FIND REPAIR SITES AND REPAIR
             //
-            else {
- 
-
-                var targets = creep.room.find(FIND_STRUCTURES, {
+            else 
+            {
+            
+                var damagedRamparts = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
-                    return (structure.structureType != STRUCTURE_WALL) && (structure.hits < structure.hitsMax);}});
-                if(Game.time % 5 == 0) targets.sort((a,b) => a.hits - b.hits);
-                if(targets.length) {
-                    if(creep.repair(targets[0]) == ERR_NOT_IN_RANGE) {creep.moveTo(targets[0], {visualizePathStyle: {stroke: '#ffffff'}});
+                    return (structure.structureType == STRUCTURE_RAMPART) && structure.hits < (structure.hitsMax * rampartRepairFactor);}});
+                if(damagedRamparts.length > 0) var targets=damagedRamparts;
+                else 
+                {
+                    var targets = creep.room.find(FIND_STRUCTURES, {
+                        filter: (structure) => {
+                            return (structure.structureType != STRUCTURE_WALL) && structure.hits < structure.hitsMax;}});
+                }
+                if(targets.length)
+                {
+                    var closestRepair = creep.pos.findClosestByRange(targets);
+                    if(creep.repair(closestRepair) == ERR_NOT_IN_RANGE) {creep.moveTo(closestRepair, {visualizePathStyle: {stroke: '#ffffff'}});
                     } //CLOSE if(creep.repair(targets[0])
-                } //CLOSE if(targets.length) 
+                } //CLOSE if(targets.length)
            } //CLOSE else
         } //CLOSE if(creep.memory.building) 
 
@@ -58,4 +59,3 @@ var roleBuilder = {
 
 module.exports = roleBuilder;
 
-              
